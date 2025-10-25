@@ -1,12 +1,39 @@
 /**
- * Waktu Solat Malaysia - Professional Prayer Times Tool
+ * Universal CDN Loader + Waktu Solat Malaysia Tool
  * Version: 2.0.0
  * Author: IlmuAlam.com
  * License: MIT
  */
 
-(function() {
+(function () {
   'use strict';
+
+  // ✅ Universal JS Loader (auto-detect GitHub CDN/jsDelivr)
+  const isCDN = /cdn\.jsdelivr\.net|raw\.githubusercontent\.com/.test(location.href);
+  if (isCDN) {
+    console.log('[IlmuAlam Loader] Running from CDN:', location.href);
+    if (document.readyState === 'loading') {
+      document.addEventListener('DOMContentLoaded', initScript);
+    } else {
+      initScript();
+    }
+  } else {
+    initScript();
+  }
+
+  // === MAIN TOOL INITIALIZER ===
+  function initScript() {
+    console.log('[IlmuAlam Loader] Initializing Waktu Solat Malaysia Tool...');
+
+    /** 
+     * Waktu Solat Malaysia - Professional Prayer Times Tool
+     * Version: 2.0.0
+     * Author: IlmuAlam.com
+     * License: MIT
+     */
+
+    (function () {
+      'use strict';
 
   // Configuration
   const CONFIG = {
@@ -636,7 +663,7 @@
           <title>Waktu Solat - ${zoneData.state}</title>
           <style>
             body { font-family: Arial, sans-serif; padding: 40px; }
-            h1 { color: #249749; text-align: center; }
+            h2 { color: #249749; text-align: center; }
             table { width: 100%; border-collapse: collapse; margin-top: 30px; }
             th, td { padding: 15px; text-align: left; border-bottom: 1px solid #ddd; }
             th { background: #249749; color: white; }
@@ -644,7 +671,7 @@
           </style>
         </head>
         <body>
-          <h1>🕌 Waktu Solat ${zoneData.state}</h1>
+          <h2>🕌 Waktu Solat ${zoneData.state}</h2>
           <p style="text-align:center;">${Elements.locationZone.textContent}</p>
           <p style="text-align:center;">${Elements.dateGregorian.textContent}</p>
           <table>
@@ -763,4 +790,15 @@
     init();
   }
 
+})();
+
+      // Initialize when DOM is ready
+      if (document.readyState === 'loading') {
+        document.addEventListener('DOMContentLoaded', init);
+      } else {
+        init();
+      }
+
+    })();
+  }
 })();
