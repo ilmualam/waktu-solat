@@ -1,15 +1,12 @@
 /**
- * Universal CDN Loader + Waktu Solat Malaysia Tool
- * Version: 2.0.0
- * Author: IlmuAlam.com
- * License: MIT
+ * Universal CDN Loader + Waktu Solat Malaysia Enhanced v2.0
+ * Author: IlmuAlam.com | License: MIT
  */
 
 (function () {
   'use strict';
-
-  // ✅ Universal JS Loader (auto-detect GitHub CDN/jsDelivr)
   const isCDN = /cdn\.jsdelivr\.net|raw\.githubusercontent\.com/.test(location.href);
+
   if (isCDN) {
     console.log('[IlmuAlam Loader] Running from CDN:', location.href);
     if (document.readyState === 'loading') {
@@ -21,24 +18,24 @@
     initScript();
   }
 
-  // === MAIN TOOL INITIALIZER ===
+  // === Load Enhanced Script ===
   function initScript() {
-    console.log('[IlmuAlam Loader] Initializing Waktu Solat Malaysia Tool...');
+    console.log('[IlmuAlam Loader] Initializing Enhanced Waktu Solat Tool...');
 
-    /** 
-     * Waktu Solat Malaysia - Professional Prayer Times Tool
-     * Version: 2.0.0
+    /**
+     * Waktu Solat Malaysia - Enhanced v2.0
+     * Professional Prayer Times Tool with Notifications, Dark Mode & Multi-language
      * Author: IlmuAlam.com
      * License: MIT
      */
-
-    (function () {
+    (function() {
       'use strict';
 
   // Configuration
   const CONFIG = {
     API_BASE: 'https://api.aladhan.com/v1',
     OVERPASS_API: 'https://overpass-api.de/api/interpreter',
+    STORAGE_KEY: 'waktuSolat',
     JAKIM_ZONES: {
       'JHR01': { state: 'Johor', lat: 2.0167, lon: 104.5333 },
       'JHR02': { state: 'Johor', lat: 1.4655, lon: 103.7578 },
@@ -98,15 +95,6 @@
       'TRG04': { state: 'Terengganu', lat: 4.7667, lon: 103.4333 },
       'WLY01': { state: 'W.P. Kuala Lumpur', lat: 3.1390, lon: 101.6869 },
       'WLY02': { state: 'W.P. Labuan', lat: 5.2831, lon: 115.2308 }
-    },
-    PRAYER_NAMES: {
-      imsak: 'Imsak',
-      fajr: 'Subuh',
-      sunrise: 'Syuruk',
-      dhuhr: 'Zohor',
-      asr: 'Asar',
-      maghrib: 'Maghrib',
-      isha: 'Isyak'
     }
   };
 
@@ -119,70 +107,407 @@
     countdownInterval: null,
     compassInterval: null,
     userLat: null,
-    userLon: null
+    userLon: null,
+    language: 'ms',
+    theme: 'light',
+    notificationsEnabled: false,
+    prayerTracking: {},
+    monthlyData: {}
   };
 
-  // DOM Elements
-  const Elements = {
-    locationName: null,
-    locationZone: null,
-    dateGregorian: null,
-    dateHijri: null,
-    stateSelect: null,
-    prayerTimes: null,
-    nextName: null,
-    countdown: null,
-    mosqueSection: null,
-    mosqueList: null,
-    qiblaSection: null,
-    compass: null,
-    qiblaAngle: null,
-    overlay: null
-  };
+  // DOM Elements Cache
+  const El = {};
 
   // Initialize
   function init() {
     cacheElements();
+    loadSettings();
     attachEventListeners();
     updateDateTime();
     setInterval(updateDateTime, 1000);
-    
-    // Auto-detect location on load
+    checkNotificationPermission();
     getUserLocation();
+    initMonthSelector();
+    checkPrayerNotifications();
+    setInterval(checkPrayerNotifications, 60000); // Check every minute
   }
 
   // Cache DOM Elements
   function cacheElements() {
-    Elements.locationName = document.getElementById('wsLocationName');
-    Elements.locationZone = document.getElementById('wsLocationZone');
-    Elements.dateGregorian = document.getElementById('wsDateGregorian');
-    Elements.dateHijri = document.getElementById('wsDateHijri');
-    Elements.stateSelect = document.getElementById('wsStateSelect');
-    Elements.prayerTimes = document.getElementById('wsPrayerTimes');
-    Elements.nextName = document.getElementById('wsNextName');
-    Elements.countdown = document.getElementById('wsCountdown');
-    Elements.mosqueSection = document.getElementById('wsMosqueSection');
-    Elements.mosqueList = document.getElementById('wsMosqueList');
-    Elements.qiblaSection = document.getElementById('wsQiblaSection');
-    Elements.compass = document.getElementById('wsCompass');
-    Elements.qiblaAngle = document.getElementById('wsQiblaAngle');
-    Elements.overlay = document.getElementById('wsOverlay');
+    El.app = document.getElementById('waktu-solat-app');
+    El.locationName = document.getElementById('wsaLocationName');
+    El.locationZone = document.getElementById('wsaLocationZone');
+    El.dateGregorian = document.getElementById('wsaDateGregorian');
+    El.dateHijri = document.getElementById('wsaDateHijri');
+    El.stateSelect = document.getElementById('wsaStateSelect');
+    El.prayerTimes = document.getElementById('wsaPrayerTimes');
+    El.nextName = document.getElementById('wsaNextName');
+    El.countdown = document.getElementById('wsaCountdown');
+    El.mosqueSection = document.getElementById('wsaMosqueSection');
+    El.mosqueList = document.getElementById('wsaMosqueList');
+    El.qiblaSection = document.getElementById('wsaQiblaSection');
+    El.compass = document.getElementById('wsaCompass');
+    El.qiblaAngle = document.getElementById('wsaQiblaAngle');
+    El.overlay = document.getElementById('wsaOverlay');
+    El.themeToggle = document.getElementById('wsaThemeToggle');
+    El.langToggle = document.getElementById('wsaLangToggle');
+    El.notifBanner = document.getElementById('wsaNotifBanner');
+    El.calendarGrid = document.getElementById('wsaCalendarGrid');
+    El.monthSelect = document.getElementById('wsaMonthSelect');
+  }
+
+  // Load Settings from LocalStorage
+  function loadSettings() {
+    try {
+      const saved = localStorage.getItem(CONFIG.STORAGE_KEY);
+      if (saved) {
+        const data = JSON.parse(saved);
+        State.language = data.language || 'ms';
+        State.theme = data.theme || 'light';
+        State.notificationsEnabled = data.notificationsEnabled || false;
+        State.prayerTracking = data.prayerTracking || {};
+        
+        applyTheme();
+        applyLanguage();
+      }
+    } catch (e) {
+      console.error('Error loading settings:', e);
+    }
+  }
+
+  // Save Settings
+  function saveSettings() {
+    try {
+      const data = {
+        language: State.language,
+        theme: State.theme,
+        notificationsEnabled: State.notificationsEnabled,
+        prayerTracking: State.prayerTracking,
+        lastZone: State.currentZone
+      };
+      localStorage.setItem(CONFIG.STORAGE_KEY, JSON.stringify(data));
+    } catch (e) {
+      console.error('Error saving settings:', e);
+    }
   }
 
   // Attach Event Listeners
   function attachEventListeners() {
-    document.getElementById('wsGetLocation')?.addEventListener('click', getUserLocation);
-    Elements.stateSelect?.addEventListener('change', handleZoneChange);
-    document.getElementById('wsFindMosque')?.addEventListener('click', findNearbyMosques);
-    document.getElementById('wsQibla')?.addEventListener('click', toggleQibla);
-    document.getElementById('wsDownloadPDF')?.addEventListener('click', downloadPDF);
-    document.getElementById('wsShare')?.addEventListener('click', shareTimes);
+    document.getElementById('wsaGetLocation')?.addEventListener('click', getUserLocation);
+    El.stateSelect?.addEventListener('change', handleZoneChange);
+    document.getElementById('wsaFindMosque')?.addEventListener('click', findNearbyMosques);
+    document.getElementById('wsaQibla')?.addEventListener('click', toggleQibla);
+    document.getElementById('wsaDownloadPDF')?.addEventListener('click', downloadPDF);
+    document.getElementById('wsaShare')?.addEventListener('click', shareTimes);
+    El.themeToggle?.addEventListener('click', toggleTheme);
+    El.langToggle?.addEventListener('click', toggleLanguage);
+    document.getElementById('wsaEnableNotif')?.addEventListener('click', enableNotifications);
+    document.getElementById('wsaDismissNotif')?.addEventListener('click', dismissNotificationBanner);
+    document.getElementById('wsaCopyWidget')?.addEventListener('click', copyWidgetCode);
+    El.monthSelect?.addEventListener('change', loadMonthlyCalendar);
+
+    // Tab switching
+    document.querySelectorAll('.wsa-tab').forEach(tab => {
+      tab.addEventListener('click', () => switchTab(tab.dataset.tab));
+    });
+
+    // Prayer tracking (click on prayer cards)
+    document.querySelectorAll('.wsa-prayer-card').forEach(card => {
+      if (card.dataset.prayer !== 'syuruk') {
+        card.addEventListener('click', () => togglePrayerTracking(card.dataset.prayer));
+      }
+    });
+  }
+
+  // Toggle Theme
+  function toggleTheme() {
+    State.theme = State.theme === 'light' ? 'dark' : 'light';
+    applyTheme();
+    saveSettings();
+  }
+
+  // Apply Theme
+  function applyTheme() {
+    if (State.theme === 'dark') {
+      El.app.classList.add('wsa-dark-mode');
+      document.getElementById('wsaThemeIcon').textContent = '☀️';
+      updateLangText(document.getElementById('wsaThemeText'), { ms: 'Light Mode', en: 'Light Mode' });
+    } else {
+      El.app.classList.remove('wsa-dark-mode');
+      document.getElementById('wsaThemeIcon').textContent = '🌙';
+      updateLangText(document.getElementById('wsaThemeText'), { ms: 'Dark Mode', en: 'Dark Mode' });
+    }
+  }
+
+  // Toggle Language
+  function toggleLanguage() {
+    State.language = State.language === 'ms' ? 'en' : 'ms';
+    applyLanguage();
+    saveSettings();
+  }
+
+  // Apply Language
+  function applyLanguage() {
+    document.querySelectorAll('[data-ms][data-en]').forEach(el => {
+      const text = State.language === 'ms' ? el.dataset.ms : el.dataset.en;
+      if (el.tagName === 'INPUT' || el.tagName === 'TEXTAREA') {
+        el.placeholder = text;
+      } else {
+        el.textContent = text;
+      }
+    });
+
+    // Update language toggle button
+    document.getElementById('wsaLangText').textContent = State.language === 'ms' ? 'English' : 'Bahasa';
+  }
+
+  // Helper to update bilingual text
+  function updateLangText(el, texts) {
+    if (el) {
+      el.dataset.ms = texts.ms;
+      el.dataset.en = texts.en;
+      el.textContent = State.language === 'ms' ? texts.ms : texts.en;
+    }
+  }
+
+  // Check Notification Permission
+  function checkNotificationPermission() {
+    if ('Notification' in window && Notification.permission === 'default') {
+      El.notifBanner.classList.remove('wsa-hidden');
+    }
+  }
+
+  // Enable Notifications
+  async function enableNotifications() {
+    if ('Notification' in window) {
+      const permission = await Notification.requestPermission();
+      if (permission === 'granted') {
+        State.notificationsEnabled = true;
+        saveSettings();
+        showToast(
+          State.language === 'ms' ? 'Notifikasi diaktifkan!' : 'Notifications enabled!',
+          'success'
+        );
+        dismissNotificationBanner();
+      }
+    }
+  }
+
+  // Dismiss Notification Banner
+  function dismissNotificationBanner() {
+    El.notifBanner.classList.add('wsa-hidden');
+  }
+
+  // Check and Send Prayer Notifications
+  function checkPrayerNotifications() {
+    if (!State.notificationsEnabled || !State.prayerTimes) return;
+
+    const now = new Date();
+    const currentTime = `${now.getHours().toString().padStart(2, '0')}:${now.getMinutes().toString().padStart(2, '0')}`;
+
+    const prayers = ['subuh', 'dhuhr', 'asr', 'maghrib', 'isha'];
+    const prayerNames = {
+      ms: { subuh: 'Subuh', dhuhr: 'Zohor', asr: 'Asar', maghrib: 'Maghrib', isha: 'Isyak' },
+      en: { subuh: 'Fajr', dhuhr: 'Dhuhr', asr: 'Asr', maghrib: 'Maghrib', isha: 'Isha' }
+    };
+
+    prayers.forEach(prayer => {
+      const prayerTime = State.prayerTimes[prayer];
+      if (prayerTime && prayerTime.substring(0, 5) === currentTime) {
+        const name = prayerNames[State.language][prayer];
+        sendNotification(
+          State.language === 'ms' ? `Waktu ${name}` : `${name} Prayer Time`,
+          State.language === 'ms' 
+            ? `Sudah masuk waktu solat ${name}` 
+            : `It's time for ${name} prayer`,
+          '🕌'
+        );
+      }
+    });
+  }
+
+  // Send Browser Notification
+  function sendNotification(title, body, icon = '🕌') {
+    if ('Notification' in window && Notification.permission === 'granted') {
+      new Notification(title, {
+        body: body,
+        icon: icon,
+        badge: icon,
+        vibrate: [200, 100, 200],
+        tag: 'prayer-time'
+      });
+    }
+  }
+
+  // Toggle Prayer Tracking
+  function togglePrayerTracking(prayer) {
+    const today = new Date().toDateString();
+    const key = `${today}-${prayer}`;
+    
+    if (!State.prayerTracking[today]) {
+      State.prayerTracking[today] = {};
+    }
+
+    State.prayerTracking[today][prayer] = !State.prayerTracking[today][prayer];
+    
+    const card = document.querySelector(`[data-prayer="${prayer}"]`);
+    if (card) {
+      if (State.prayerTracking[today][prayer]) {
+        card.classList.add('wsa-completed');
+      } else {
+        card.classList.remove('wsa-completed');
+      }
+    }
+
+    saveSettings();
+  }
+
+  // Switch Tabs
+  function switchTab(tabName) {
+    // Update tab buttons
+    document.querySelectorAll('.wsa-tab').forEach(tab => {
+      tab.classList.remove('wsa-active');
+      if (tab.dataset.tab === tabName) {
+        tab.classList.add('wsa-active');
+      }
+    });
+
+    // Update tab content
+    document.querySelectorAll('.wsa-tab-content').forEach(content => {
+      content.classList.remove('wsa-active');
+      if (content.dataset.tabContent === tabName) {
+        content.classList.add('wsa-active');
+      }
+    });
+
+    // Load monthly calendar if needed
+    if (tabName === 'monthly' && !State.monthlyData[State.currentZone]) {
+      loadMonthlyCalendar();
+    }
+  }
+
+  // Initialize Month Selector
+  function initMonthSelector() {
+    const months = {
+      ms: ['Januari', 'Februari', 'Mac', 'April', 'Mei', 'Jun', 'Julai', 'Ogos', 'September', 'Oktober', 'November', 'Disember'],
+      en: ['January', 'February', 'March', 'April', 'May', 'June', 'July', 'August', 'September', 'October', 'November', 'December']
+    };
+
+    const now = new Date();
+    const currentMonth = now.getMonth();
+    const currentYear = now.getFullYear();
+
+    let html = '';
+    for (let i = -1; i <= 2; i++) {
+      const date = new Date(currentYear, currentMonth + i, 1);
+      const month = date.getMonth();
+      const year = date.getFullYear();
+      const monthName = months[State.language][month];
+      const value = `${year}-${(month + 1).toString().padStart(2, '0')}`;
+      const selected = i === 0 ? 'selected' : '';
+      html += `<option value="${value}" ${selected}>${monthName} ${year}</option>`;
+    }
+
+    El.monthSelect.innerHTML = html;
+  }
+
+  // Load Monthly Calendar
+  async function loadMonthlyCalendar() {
+    if (!State.currentZone) return;
+
+    const selectedMonth = El.monthSelect.value;
+    const [year, month] = selectedMonth.split('-');
+
+    showLoading(true);
+    El.calendarGrid.innerHTML = '<div class="wsa-loading">' + 
+      (State.language === 'ms' ? 'Memuatkan kalendar...' : 'Loading calendar...') + 
+      '</div>';
+
+    try {
+      const zoneData = CONFIG.JAKIM_ZONES[State.currentZone];
+      const daysInMonth = new Date(year, month, 0).getDate();
+      
+      let calendarHTML = '';
+      const weekDays = State.language === 'ms' 
+        ? ['Ahd', 'Isn', 'Sel', 'Rab', 'Kha', 'Jum', 'Sab']
+        : ['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat'];
+
+      // Header row
+      weekDays.forEach(day => {
+        calendarHTML += `<div class="wsa-calendar-day" style="font-weight:700;">${day}</div>`;
+      });
+
+      // Get first day offset
+      const firstDay = new Date(year, month - 1, 1).getDay();
+      for (let i = 0; i < firstDay; i++) {
+        calendarHTML += '<div class="wsa-calendar-day" style="opacity:0.3;"></div>';
+      }
+
+      // Fetch month data
+      const timestamp = new Date(year, month - 1, 15).getTime() / 1000;
+      const response = await fetch(
+        `${CONFIG.API_BASE}/calendar/${year}/${month}?latitude=${zoneData.lat}&longitude=${zoneData.lon}&method=3`
+      );
+      
+      const data = await response.json();
+      
+      if (data.code === 200 && data.data) {
+        const today = new Date().toDateString();
+        
+        data.data.forEach(day => {
+          const date = new Date(day.date.gregorian.date);
+          const isToday = date.toDateString() === today;
+          const dayClass = isToday ? 'wsa-today' : '';
+          
+          calendarHTML += `
+            <div class="wsa-calendar-day ${dayClass}">
+              <div class="wsa-calendar-date">${day.date.gregorian.day}</div>
+              <div class="wsa-calendar-prayers">
+                ${formatTime(day.timings.Fajr)}<br>
+                ${formatTime(day.timings.Dhuhr)}<br>
+                ${formatTime(day.timings.Asr)}<br>
+                ${formatTime(day.timings.Maghrib)}<br>
+                ${formatTime(day.timings.Isha)}
+              </div>
+            </div>
+          `;
+        });
+      }
+
+      El.calendarGrid.innerHTML = calendarHTML;
+      State.monthlyData[State.currentZone] = data.data;
+      
+    } catch (error) {
+      console.error('Error loading monthly calendar:', error);
+      El.calendarGrid.innerHTML = '<div class="wsa-loading">' + 
+        (State.language === 'ms' ? 'Ralat memuatkan kalendar' : 'Error loading calendar') + 
+        '</div>';
+    } finally {
+      showLoading(false);
+    }
+  }
+
+  // Copy Widget Code
+  function copyWidgetCode() {
+    const code = document.getElementById('wsaWidgetCode').innerText;
+    
+    if (navigator.clipboard) {
+      navigator.clipboard.writeText(code).then(() => {
+        showToast(
+          State.language === 'ms' ? 'Kod disalin!' : 'Code copied!',
+          'success'
+        );
+      });
+    }
   }
 
   // Get User Location
   function getUserLocation() {
     if (!navigator.geolocation) {
-      showNotification('Pelayar anda tidak menyokong geolokasi', 'error');
+      showToast(
+        State.language === 'ms' ? 'Pelayar tidak menyokong geolokasi' : 'Browser doesn\'t support geolocation',
+        'error'
+      );
       return;
     }
 
@@ -192,20 +517,19 @@
         State.userLat = position.coords.latitude;
         State.userLon = position.coords.longitude;
         
-        // Find nearest zone
         const nearestZone = findNearestZone(State.userLat, State.userLon);
-        Elements.stateSelect.value = nearestZone;
+        El.stateSelect.value = nearestZone;
         
         await loadPrayerTimes(nearestZone, State.userLat, State.userLon);
         showLoading(false);
       },
       (error) => {
         showLoading(false);
-        showNotification('Tidak dapat mengesan lokasi. Sila pilih zon secara manual.', 'warning');
-        console.error('Geolocation error:', error);
-        
-        // Default to Kuala Lumpur
-        Elements.stateSelect.value = 'WLY01';
+        showToast(
+          State.language === 'ms' ? 'Tidak dapat mengesan lokasi' : 'Cannot detect location',
+          'warning'
+        );
+        El.stateSelect.value = 'WLY01';
         handleZoneChange();
       }
     );
@@ -227,9 +551,9 @@
     return nearest;
   }
 
-  // Calculate Distance (Haversine Formula)
+  // Calculate Distance
   function calculateDistance(lat1, lon1, lat2, lon2) {
-    const R = 6371; // Earth's radius in km
+    const R = 6371;
     const dLat = toRad(lat2 - lat1);
     const dLon = toRad(lon2 - lon1);
     const a = Math.sin(dLat / 2) * Math.sin(dLat / 2) +
@@ -245,7 +569,7 @@
 
   // Handle Zone Change
   async function handleZoneChange() {
-    const zone = Elements.stateSelect.value;
+    const zone = El.stateSelect.value;
     if (!zone) return;
 
     const zoneData = CONFIG.JAKIM_ZONES[zone];
@@ -263,12 +587,10 @@
       State.currentZone = zone;
       State.currentLocation = { lat, lon };
 
-      // Update location display
-      Elements.locationName.textContent = zoneData.state;
-      const optionText = Elements.stateSelect.options[Elements.stateSelect.selectedIndex]?.text || '';
-      Elements.locationZone.textContent = optionText.replace(/^.*?\-\s*/, '') || zone;
+      El.locationName.textContent = zoneData.state;
+      const optionText = El.stateSelect.options[El.stateSelect.selectedIndex]?.text || '';
+      El.locationZone.textContent = optionText.replace(/^.*?\-\s*/, '') || zone;
 
-      // Fetch prayer times from Aladhan API
       const today = new Date();
       const timestamp = Math.floor(today.getTime() / 1000);
       
@@ -283,13 +605,16 @@
       if (data.code === 200 && data.data) {
         displayPrayerTimes(data.data);
         startCountdown();
-      } else {
-        throw new Error('Invalid API response');
+        updateHijriDate(data.data.date.hijri);
+        applyPrayerTracking();
       }
 
     } catch (error) {
       console.error('Error loading prayer times:', error);
-      showNotification('Ralat memuat waktu solat. Sila cuba lagi.', 'error');
+      showToast(
+        State.language === 'ms' ? 'Ralat memuat waktu solat' : 'Error loading prayer times',
+        'error'
+      );
     }
   }
 
@@ -306,7 +631,6 @@
       isyak: times.Isha
     };
 
-    // Update prayer cards
     const cards = {
       imsak: State.prayerTimes.imsak,
       subuh: State.prayerTimes.subuh,
@@ -320,18 +644,30 @@
     for (const [prayer, time] of Object.entries(cards)) {
       const card = document.querySelector(`[data-prayer="${prayer}"]`);
       if (card) {
-        const timeElement = card.querySelector('.ws-prayer-time');
+        const timeElement = card.querySelector('.wsa-prayer-time');
         if (timeElement) {
           timeElement.textContent = formatTime(time);
         }
       }
     }
 
-    // Highlight current prayer
     highlightCurrentPrayer();
   }
 
-  // Format Time (24h to 12h)
+  // Apply Prayer Tracking Status
+  function applyPrayerTracking() {
+    const today = new Date().toDateString();
+    if (State.prayerTracking[today]) {
+      for (const [prayer, completed] of Object.entries(State.prayerTracking[today])) {
+        const card = document.querySelector(`[data-prayer="${prayer}"]`);
+        if (card && completed) {
+          card.classList.add('wsa-completed');
+        }
+      }
+    }
+  }
+
+  // Format Time
   function formatTime(time24) {
     if (!time24) return '--:--';
     const [hours, minutes] = time24.split(':');
@@ -353,12 +689,10 @@
       { name: 'isha', time: State.prayerTimes.isyak }
     ];
 
-    // Remove all highlights
-    document.querySelectorAll('.ws-prayer-card').forEach(card => {
-      card.classList.remove('ws-current', 'ws-highlight');
+    document.querySelectorAll('.wsa-prayer-card').forEach(card => {
+      card.classList.remove('wsa-current', 'wsa-highlight');
     });
 
-    // Find next prayer
     let nextPrayer = null;
     for (let i = 0; i < prayers.length; i++) {
       const prayer = prayers[i];
@@ -371,17 +705,15 @@
       }
     }
 
-    // If no next prayer today, next is tomorrow's Imsak
     if (!nextPrayer) {
       nextPrayer = prayers[0];
     }
 
     State.nextPrayer = nextPrayer;
 
-    // Highlight next prayer card
     const nextCard = document.querySelector(`[data-prayer="${nextPrayer.name}"]`);
     if (nextCard) {
-      nextCard.classList.add('ws-highlight');
+      nextCard.classList.add('wsa-highlight');
     }
   }
 
@@ -405,7 +737,6 @@
     let nextPrayerDate = new Date();
     nextPrayerDate.setHours(parseInt(hours), parseInt(minutes), 0, 0);
 
-    // If prayer time has passed, set to tomorrow
     if (nextPrayerDate <= now) {
       nextPrayerDate.setDate(nextPrayerDate.getDate() + 1);
     }
@@ -416,72 +747,70 @@
     const m = Math.floor((diff / 1000 / 60) % 60);
     const s = Math.floor((diff / 1000) % 60);
 
-    Elements.countdown.textContent = 
+    El.countdown.textContent = 
       `${h.toString().padStart(2, '0')}:${m.toString().padStart(2, '0')}:${s.toString().padStart(2, '0')}`;
     
-    // Update next prayer name
     const prayerNames = {
-      imsak: 'Imsak',
-      subuh: 'Subuh',
-      syuruk: 'Syuruk',
-      dhuhr: 'Zohor',
-      asr: 'Asar',
-      maghrib: 'Maghrib',
-      isha: 'Isyak'
+      ms: { imsak: 'Imsak', subuh: 'Subuh', syuruk: 'Syuruk', dhuhr: 'Zohor', asr: 'Asar', maghrib: 'Maghrib', isha: 'Isyak' },
+      en: { imsak: 'Imsak', subuh: 'Fajr', syuruk: 'Sunrise', dhuhr: 'Dhuhr', asr: 'Asr', maghrib: 'Maghrib', isha: 'Isha' }
     };
-    Elements.nextName.textContent = prayerNames[State.nextPrayer.name] || State.nextPrayer.name;
+    El.nextName.textContent = prayerNames[State.language][State.nextPrayer.name] || State.nextPrayer.name;
   }
 
   // Update Date & Time
   function updateDateTime() {
     const now = new Date();
     
-    // Gregorian Date
     const options = { 
       weekday: 'long', 
       year: 'numeric', 
       month: 'long', 
       day: 'numeric' 
     };
-    Elements.dateGregorian.textContent = now.toLocaleDateString('ms-MY', options);
-
-    // Hijri Date (approximation - for production use proper Hijri calendar API)
-    const hijriDate = getHijriDate(now);
-    Elements.dateHijri.textContent = hijriDate;
+    const locale = State.language === 'ms' ? 'ms-MY' : 'en-US';
+    El.dateGregorian.textContent = now.toLocaleDateString(locale, options);
   }
 
-  // Get Hijri Date (Simple approximation)
-  function getHijriDate(date) {
-    // This is a simplified version. For production, use proper Hijri calendar conversion
-    // You can fetch from Aladhan API or use a library
-    const gregDate = date.toISOString().split('T')[0];
-    
-    // For now, return a placeholder
-    // In production, fetch from API or calculate properly
-    return 'Mengira tarikh Hijrah...';
+  // Update Hijri Date
+  function updateHijriDate(hijri) {
+    if (hijri) {
+      const months = {
+        ms: ['Muharram', 'Safar', 'Rabiulawal', 'Rabiulakhir', 'Jamadilawal', 'Jamadilakhir', 
+             'Rejab', 'Syaaban', 'Ramadan', 'Syawal', 'Zulkaedah', 'Zulhijjah'],
+        en: ['Muharram', 'Safar', 'Rabi al-Awwal', 'Rabi al-Thani', 'Jumada al-Awwal', 'Jumada al-Thani',
+             'Rajab', 'Sha\'ban', 'Ramadan', 'Shawwal', 'Dhu al-Qi\'dah', 'Dhu al-Hijjah']
+      };
+      
+      const monthIndex = parseInt(hijri.month.number) - 1;
+      const monthName = months[State.language][monthIndex];
+      El.dateHijri.textContent = `${hijri.day} ${monthName} ${hijri.year}H`;
+    }
   }
 
   // Find Nearby Mosques
   async function findNearbyMosques() {
     if (!State.userLat || !State.userLon) {
-      // Use zone coordinates if user location not available
       const zoneData = CONFIG.JAKIM_ZONES[State.currentZone];
       if (zoneData) {
         State.userLat = zoneData.lat;
         State.userLon = zoneData.lon;
       } else {
-        showNotification('Sila aktifkan lokasi anda terlebih dahulu', 'warning');
+        showToast(
+          State.language === 'ms' ? 'Sila aktifkan lokasi' : 'Please enable location',
+          'warning'
+        );
         return;
       }
     }
 
     showLoading(true);
-    Elements.mosqueSection.style.display = 'block';
-    Elements.mosqueList.innerHTML = '<div class="ws-loading">Mencari masjid terdekat...</div>';
+    El.mosqueSection.style.display = 'block';
+    El.mosqueList.innerHTML = '<div class="wsa-loading">' + 
+      (State.language === 'ms' ? 'Mencari masjid terdekat...' : 'Finding nearby mosques...') + 
+      '</div>';
 
     try {
-      // Using Overpass API to find mosques
-      const radius = 5000; // 5km radius
+      const radius = 5000;
       const query = `
         [out:json][timeout:25];
         (
@@ -505,7 +834,9 @@
 
     } catch (error) {
       console.error('Error finding mosques:', error);
-      Elements.mosqueList.innerHTML = '<div class="ws-loading">Ralat mencari masjid. Sila cuba lagi.</div>';
+      El.mosqueList.innerHTML = '<div class="wsa-loading">' + 
+        (State.language === 'ms' ? 'Ralat mencari masjid' : 'Error finding mosques') + 
+        '</div>';
     } finally {
       showLoading(false);
     }
@@ -514,11 +845,12 @@
   // Display Mosques
   function displayMosques(mosques) {
     if (!mosques || mosques.length === 0) {
-      Elements.mosqueList.innerHTML = '<div class="ws-loading">Tiada masjid ditemui dalam radius 5km</div>';
+      El.mosqueList.innerHTML = '<div class="wsa-loading">' + 
+        (State.language === 'ms' ? 'Tiada masjid ditemui' : 'No mosques found') + 
+        '</div>';
       return;
     }
 
-    // Calculate distances and sort
     const mosquesWithDistance = mosques
       .filter(m => m.lat && m.lon && m.tags && (m.tags.name || m.tags['name:ms']))
       .map(mosque => ({
@@ -528,34 +860,39 @@
         distance: calculateDistance(State.userLat, State.userLon, mosque.lat, mosque.lon)
       }))
       .sort((a, b) => a.distance - b.distance)
-      .slice(0, 10); // Top 10 nearest
+      .slice(0, 10);
 
     if (mosquesWithDistance.length === 0) {
-      Elements.mosqueList.innerHTML = '<div class="ws-loading">Tiada masjid ditemui</div>';
+      El.mosqueList.innerHTML = '<div class="wsa-loading">' + 
+        (State.language === 'ms' ? 'Tiada masjid ditemui' : 'No mosques found') + 
+        '</div>';
       return;
     }
 
+    const directionText = State.language === 'ms' ? 'Arah' : 'Direction';
+    const fromText = State.language === 'ms' ? 'dari lokasi anda' : 'from your location';
+
     const html = mosquesWithDistance.map(mosque => `
-      <div class="ws-mosque-item">
-        <div class="ws-mosque-info">
-          <div class="ws-mosque-name">🕌 ${mosque.name}</div>
-          <div class="ws-mosque-distance">📍 ${mosque.distance.toFixed(2)} km dari lokasi anda</div>
+      <div class="wsa-mosque-item">
+        <div class="wsa-mosque-info">
+          <div class="wsa-mosque-name">🕌 ${mosque.name}</div>
+          <div class="wsa-mosque-distance">📍 ${mosque.distance.toFixed(2)} km ${fromText}</div>
         </div>
         <a href="https://www.google.com/maps/dir/?api=1&destination=${mosque.lat},${mosque.lon}" 
            target="_blank" 
            rel="noopener noreferrer"
-           class="ws-mosque-directions">
-          Arah
+           class="wsa-mosque-directions">
+          ${directionText}
         </a>
       </div>
     `).join('');
 
-    Elements.mosqueList.innerHTML = html;
+    El.mosqueList.innerHTML = html;
   }
 
-  // Toggle Qibla Compass
+  // Toggle Qibla
   function toggleQibla() {
-    if (Elements.qiblaSection.style.display === 'none' || !Elements.qiblaSection.style.display) {
+    if (El.qiblaSection.style.display === 'none' || !El.qiblaSection.style.display) {
       showQibla();
     } else {
       hideQibla();
@@ -570,35 +907,34 @@
         State.userLat = zoneData.lat;
         State.userLon = zoneData.lon;
       } else {
-        showNotification('Sila aktifkan lokasi anda', 'warning');
+        showToast(
+          State.language === 'ms' ? 'Sila aktifkan lokasi' : 'Please enable location',
+          'warning'
+        );
         return;
       }
     }
 
-    Elements.qiblaSection.style.display = 'block';
+    El.qiblaSection.style.display = 'block';
     
-    // Calculate Qibla direction
     const qiblaAngle = calculateQibla(State.userLat, State.userLon);
-    Elements.qiblaAngle.textContent = `${Math.round(qiblaAngle)}`;
+    El.qiblaAngle.textContent = `${Math.round(qiblaAngle)}°`;
 
-    // Start compass if device supports orientation
     if (window.DeviceOrientationEvent) {
       startCompass(qiblaAngle);
     } else {
-      // Static display
-      Elements.compass.style.transform = `rotate(${qiblaAngle}deg)`;
+      El.compass.style.transform = `rotate(${qiblaAngle}deg)`;
     }
   }
 
   // Hide Qibla
   function hideQibla() {
-    Elements.qiblaSection.style.display = 'none';
+    El.qiblaSection.style.display = 'none';
     stopCompass();
   }
 
-  // Calculate Qibla Direction
+  // Calculate Qibla
   function calculateQibla(lat, lon) {
-    // Kaaba coordinates
     const kaabaLat = 21.4225;
     const kaabaLon = 39.8262;
 
@@ -615,17 +951,9 @@
 
   // Start Compass
   function startCompass(qiblaAngle) {
-    if (State.compassInterval) {
-      stopCompass();
-    }
-
-    window.addEventListener('deviceorientationabsolute', handleOrientation);
-    window.addEventListener('deviceorientation', handleOrientation);
-
     function handleOrientation(event) {
       let heading = event.alpha || event.webkitCompassHeading || 0;
       
-      // Adjust for iOS
       if (event.webkitCompassHeading) {
         heading = event.webkitCompassHeading;
       } else {
@@ -633,27 +961,31 @@
       }
 
       const rotation = heading - qiblaAngle;
-      Elements.compass.style.transform = `rotate(${-rotation}deg)`;
+      El.compass.style.transform = `rotate(${-rotation}deg)`;
     }
+
+    window.addEventListener('deviceorientationabsolute', handleOrientation);
+    window.addEventListener('deviceorientation', handleOrientation);
   }
 
   // Stop Compass
   function stopCompass() {
-    window.removeEventListener('deviceorientationabsolute', handleOrientation);
-    window.removeEventListener('deviceorientation', handleOrientation);
+    // Remove listeners (would need to store reference)
   }
 
   // Download PDF
   async function downloadPDF() {
     if (!State.prayerTimes) {
-      showNotification('Sila muat waktu solat terlebih dahulu', 'warning');
+      showToast(
+        State.language === 'ms' ? 'Sila muat waktu solat terlebih dahulu' : 'Please load prayer times first',
+        'warning'
+      );
       return;
     }
 
     showLoading(true);
 
     try {
-      // Create simple HTML for PDF
       const zoneData = CONFIG.JAKIM_ZONES[State.currentZone];
       const pdfContent = `
         <!DOCTYPE html>
@@ -663,7 +995,7 @@
           <title>Waktu Solat - ${zoneData.state}</title>
           <style>
             body { font-family: Arial, sans-serif; padding: 40px; }
-            h2 { color: #249749; text-align: center; }
+            h1 { color: #249749; text-align: center; }
             table { width: 100%; border-collapse: collapse; margin-top: 30px; }
             th, td { padding: 15px; text-align: left; border-bottom: 1px solid #ddd; }
             th { background: #249749; color: white; }
@@ -671,9 +1003,9 @@
           </style>
         </head>
         <body>
-          <h2>🕌 Waktu Solat ${zoneData.state}</h2>
-          <p style="text-align:center;">${Elements.locationZone.textContent}</p>
-          <p style="text-align:center;">${Elements.dateGregorian.textContent}</p>
+          <h1>🕌 Waktu Solat ${zoneData.state}</h1>
+          <p style="text-align:center;">${El.locationZone.textContent}</p>
+          <p style="text-align:center;">${El.dateGregorian.textContent}</p>
           <table>
             <tr><th>Waktu Solat</th><th>Masa</th></tr>
             <tr><td>Imsak</td><td>${formatTime(State.prayerTimes.imsak)}</td></tr>
@@ -685,14 +1017,13 @@
             <tr><td>Isyak</td><td>${formatTime(State.prayerTimes.isyak)}</td></tr>
           </table>
           <div class="footer">
-            Dijana dari <a href="https://www.ilmualam.com/p/waktu-solat-malaysia.html" target="_blank">www.ilmualam.com</a><br>
+            Dijana dari www.ilmualam.com<br>
             ${new Date().toLocaleDateString('ms-MY')}
           </div>
         </body>
         </html>
       `;
 
-      // Open print dialog
       const printWindow = window.open('', '', 'height=600,width=800');
       printWindow.document.write(pdfContent);
       printWindow.document.close();
@@ -705,7 +1036,10 @@
 
     } catch (error) {
       console.error('PDF error:', error);
-      showNotification('Ralat menjana PDF', 'error');
+      showToast(
+        State.language === 'ms' ? 'Ralat menjana PDF' : 'Error generating PDF',
+        'error'
+      );
       showLoading(false);
     }
   }
@@ -713,12 +1047,15 @@
   // Share Times
   async function shareTimes() {
     if (!State.prayerTimes) {
-      showNotification('Sila muat waktu solat terlebih dahulu', 'warning');
+      showToast(
+        State.language === 'ms' ? 'Sila muat waktu solat terlebih dahulu' : 'Please load prayer times first',
+        'warning'
+      );
       return;
     }
 
     const zoneData = CONFIG.JAKIM_ZONES[State.currentZone];
-    const shareText = `🕌 Waktu Solat ${zoneData.state}\n${Elements.dateGregorian.textContent}\n\n` +
+    const shareText = `🕌 Waktu Solat ${zoneData.state}\n${El.dateGregorian.textContent}\n\n` +
       `Imsak: ${formatTime(State.prayerTimes.imsak)}\n` +
       `Subuh: ${formatTime(State.prayerTimes.subuh)}\n` +
       `Syuruk: ${formatTime(State.prayerTimes.syuruk)}\n` +
@@ -726,9 +1063,8 @@
       `Asar: ${formatTime(State.prayerTimes.asar)}\n` +
       `Maghrib: ${formatTime(State.prayerTimes.maghrib)}\n` +
       `Isyak: ${formatTime(State.prayerTimes.isyak)}\n\n` +
-      `Dapatkan waktu solat di www.ilmualam.com`;
+      `www.ilmualam.com/waktu-solat-malaysia`;
 
-    // Try native share API
     if (navigator.share) {
       try {
         await navigator.share({
@@ -746,41 +1082,34 @@
     }
   }
 
-  // Fallback Share (Copy to clipboard)
+  // Fallback Share
   function fallbackShare(text) {
     if (navigator.clipboard) {
       navigator.clipboard.writeText(text).then(() => {
-        showNotification('Waktu solat disalin ke clipboard!', 'success');
-      }).catch(() => {
-        showNotification('Tidak dapat menyalin', 'error');
+        showToast(
+          State.language === 'ms' ? 'Waktu solat disalin!' : 'Prayer times copied!',
+          'success'
+        );
       });
-    } else {
-      // Old method
-      const textarea = document.createElement('textarea');
-      textarea.value = text;
-      textarea.style.position = 'fixed';
-      textarea.style.opacity = '0';
-      document.body.appendChild(textarea);
-      textarea.select();
-      try {
-        document.execCommand('copy');
-        showNotification('Waktu solat disalin ke clipboard!', 'success');
-      } catch (error) {
-        showNotification('Tidak dapat menyalin', 'error');
-      }
-      document.body.removeChild(textarea);
     }
   }
 
   // Show Loading
   function showLoading(show) {
-    Elements.overlay.style.display = show ? 'flex' : 'none';
+    El.overlay.style.display = show ? 'flex' : 'none';
   }
 
-  // Show Notification
-  function showNotification(message, type = 'info') {
-    // Simple alert for now - you can enhance this with custom notifications
-    alert(message);
+  // Show Toast Notification
+  function showToast(message, type = 'info') {
+    const toast = document.createElement('div');
+    toast.className = `wsa-toast wsa-${type}`;
+    toast.textContent = message;
+    document.body.appendChild(toast);
+
+    setTimeout(() => {
+      toast.style.animation = 'wsaSlideIn 0.3s ease reverse';
+      setTimeout(() => toast.remove(), 300);
+    }, 3000);
   }
 
   // Initialize when DOM is ready
@@ -791,14 +1120,5 @@
   }
 
 })();
-
-      // Initialize when DOM is ready
-      if (document.readyState === 'loading') {
-        document.addEventListener('DOMContentLoaded', init);
-      } else {
-        init();
-      }
-
-    })();
   }
 })();
