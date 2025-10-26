@@ -1017,7 +1017,7 @@
             <tr><td>Isyak</td><td>${formatTime(State.prayerTimes.isyak)}</td></tr>
           </table>
           <div class="footer">
-            Dijana dari www.ilmualam.com<br>
+            Dijana dari <a href="https://www.ilmualam.com/p/waktu-solat-malaysia.html" target="_blank">www.ilmualam.com</a><br>
             ${new Date().toLocaleDateString('ms-MY')}
           </div>
         </body>
@@ -1063,7 +1063,7 @@
       `Asar: ${formatTime(State.prayerTimes.asar)}\n` +
       `Maghrib: ${formatTime(State.prayerTimes.maghrib)}\n` +
       `Isyak: ${formatTime(State.prayerTimes.isyak)}\n\n` +
-      `www.ilmualam.com/waktu-solat-malaysia`;
+      `www.ilmualam.com/p/waktu-solat-malaysia.html`;
 
     if (navigator.share) {
       try {
