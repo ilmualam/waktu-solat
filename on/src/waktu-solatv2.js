@@ -1,6 +1,6 @@
 /**
  * Waktu Solat Malaysia v1.0
- * https://github.com/YOUR-USERNAME/waktu-solat-malaysia
+ * https://github.com/ilmualam/waktu-solat
  * License: MIT with Attribution Required
  */
 
