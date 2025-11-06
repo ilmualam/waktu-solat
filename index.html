@@ -1,0 +1,85 @@
+<!DOCTYPE html>
+<html lang="ms">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description" content="Waktu Solat Malaysia - Jadual waktu sembahyang terkini untuk seluruh Malaysia berdasarkan data rasmi JAKIM. Auto-detect lokasi, cari masjid terdekat, dan arah kiblat.">
+    <meta name="keywords" content="waktu solat, malaysia, jakim, prayer times, jadual sembahyang, solat selangor, solat johor">
+    <title>Waktu Solat Malaysia - Tepat & Rasmi Dari JAKIM</title>
+    
+    <!-- Open Graph -->
+    <meta property="og:title" content="Waktu Solat Malaysia - JAKIM">
+    <meta property="og:description" content="Jadual waktu sembahyang terkini untuk seluruh Malaysia">
+    <meta property="og:type" content="website">
+    
+    <!-- Schema Markup -->
+    <script type="application/ld+json">
+    {
+      "@context": "https://schema.org",
+      "@type": "WebApplication",
+      "name": "Waktu Solat Malaysia",
+      "description": "Jadual waktu solat terkini untuk seluruh Malaysia berdasarkan data rasmi JAKIM",
+      "applicationCategory": "UtilitiesApplication",
+      "operatingSystem": "Any",
+      "offers": {
+        "@type": "Offer",
+        "price": "0",
+        "priceCurrency": "MYR"
+      }
+    }
+    </script>
+
+    <link rel="stylesheet" href="waktu-solat.css">
+</head>
+<body>
+
+<div class="ws-tool" id="ws-tool-app">
+    <div class="ws-tool__header">
+        <h1 class="ws-tool__title">🕌 Waktu Solat Malaysia</h1>
+        <p class="ws-tool__subtitle">Jadual Waktu Sembahyang Terkini 2025 - Data Rasmi JAKIM</p>
+    </div>
+
+    <div class="ws-tool__controls">
+        <select class="ws-tool__select" id="ws-state-select">
+            <option value="">Pilih Negeri...</option>
+        </select>
+        <select class="ws-tool__select" id="ws-zone-select">
+            <option value="">Pilih Zon...</option>
+        </select>
+        <button class="ws-tool__btn ws-tool__btn--primary" id="ws-detect-btn">
+            📍 Auto-Detect Lokasi
+        </button>
+    </div>
+
+    <div class="ws-tool__main" id="ws-main-content">
+        <div class="ws-tool__loading">
+            <div class="ws-tool__spinner"></div>
+            <p>Memuatkan waktu solat...</p>
+        </div>
+    </div>
+
+    <div class="ws-tool__actions">
+        <button class="ws-tool__btn ws-tool__btn--secondary" id="ws-qibla-btn">
+            🧭 Arah Kiblat
+        </button>
+        <button class="ws-tool__btn ws-tool__btn--secondary" id="ws-mosque-btn">
+            🕌 Masjid Terdekat
+        </button>
+        <button class="ws-tool__btn ws-tool__btn--secondary" id="ws-pdf-btn">
+            📥 Muat Turun PDF
+        </button>
+        <button class="ws-tool__btn ws-tool__btn--secondary" id="ws-share-btn">
+            📤 Kongsi
+        </button>
+    </div>
+
+    <div class="ws-tool__monthly" id="ws-monthly-section" style="display: none;">
+        <h2 class="ws-tool__monthly-title">📅 Jadual Waktu Solat Bulanan</h2>
+        <div id="ws-monthly-content"></div>
+    </div>
+</div>
+
+<script src="waktu-solat.js"></script>
+
+</body>
+</html>

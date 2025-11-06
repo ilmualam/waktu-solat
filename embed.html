@@ -1,0 +1,72 @@
+<!DOCTYPE html>
+<html lang="ms">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Waktu Solat Malaysia - Embed</title>
+    <link rel="stylesheet" href="waktu-solat.css">
+    <style>
+        body { 
+            margin: 0; 
+            padding: 10px; 
+            background: transparent;
+            overflow-x: hidden;
+        }
+        .ws-tool {
+            box-shadow: none;
+        }
+    </style>
+</head>
+<body>
+
+<div class="ws-tool" id="ws-tool-app">
+    <div class="ws-tool__header">
+        <h1 class="ws-tool__title">🕌 Waktu Solat Malaysia</h1>
+        <p class="ws-tool__subtitle">Data Rasmi JAKIM</p>
+    </div>
+
+    <div class="ws-tool__controls">
+        <select class="ws-tool__select" id="ws-state-select">
+            <option value="">Pilih Negeri...</option>
+        </select>
+        <select class="ws-tool__select" id="ws-zone-select">
+            <option value="">Pilih Zon...</option>
+        </select>
+        <button class="ws-tool__btn ws-tool__btn--primary" id="ws-detect-btn">
+            📍 Auto-Detect Lokasi
+        </button>
+    </div>
+
+    <div class="ws-tool__main" id="ws-main-content">
+        <div class="ws-tool__loading">
+            <div class="ws-tool__spinner"></div>
+            <p>Memuatkan waktu solat...</p>
+        </div>
+    </div>
+
+    <div class="ws-tool__actions">
+        <button class="ws-tool__btn ws-tool__btn--secondary" id="ws-qibla-btn">
+            🧭 Arah Kiblat
+        </button>
+        <button class="ws-tool__btn ws-tool__btn--secondary" id="ws-mosque-btn">
+            🕌 Masjid Terdekat
+        </button>
+        <button class="ws-tool__btn ws-tool__btn--secondary" id="ws-share-btn">
+            📤 Kongsi
+        </button>
+    </div>
+
+    <div class="ws-tool__monthly" id="ws-monthly-section" style="display: none;">
+        <h2 class="ws-tool__monthly-title">📅 Jadual Waktu Solat Bulanan</h2>
+        <div id="ws-monthly-content"></div>
+    </div>
+
+    <div class="ws-tool__attribution">
+        Powered by <a href="https://ilmualam.com" target="_blank">IlmuAlam.com</a>
+    </div>
+</div>
+
+<script src="waktu-solat.js"></script>
+
+</body>
+</html>
