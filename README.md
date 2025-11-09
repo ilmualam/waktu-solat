@@ -1,11 +1,11 @@
 # 🕌 Waktu Solat Malaysia
 
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
-[![GitHub stars](https://img.shields.io/github/stars/YOUR-USERNAME/waktu-solat-malaysia)](https://github.com/YOUR-USERNAME/waktu-solat-malaysia/stargazers)
+[![GitHub stars](https://img.shields.io/github/stars/ilmualam/waktu-solat)](https://github.com/ilmualam/waktu-solat/stargazers)
 
 Jadual waktu solat terkini untuk seluruh Malaysia berdasarkan data rasmi **JAKIM e-Solat API**. Tool percuma, responsive, dan mudah digunakan untuk semua negeri di Malaysia.
 
-🔗 **Live Demo**: [https://YOUR-USERNAME.github.io/waktu-solat-malaysia/](https://YOUR-USERNAME.github.io/waktu-solat-malaysia/)
+🔗 **Live Demo**: [https://ilmualam.github.io/waktu-solat/](https://ilmualam.github.io/waktu-solat/)
 
 ---
 
@@ -28,7 +28,7 @@ Jadual waktu solat terkini untuk seluruh Malaysia berdasarkan data rasmi **JAKIM
 
 ### Option 1: Direct Link
 ```html
-<a href="https://YOUR-USERNAME.github.io/waktu-solat-malaysia/" target="_blank">
+<a href="[https://ilmualam.github.io/waktu-solat](https://ilmualam.github.io/waktu-solat/) target="_blank">
     Lihat Waktu Solat
 </a>
 ```
@@ -36,7 +36,7 @@ Jadual waktu solat terkini untuk seluruh Malaysia berdasarkan data rasmi **JAKIM
 ### Option 2: Iframe Embed
 ```html
 <iframe 
-    src="https://YOUR-USERNAME.github.io/waktu-solat-malaysia/embed.html"
+    src="https://ilmualam.github.io/waktu-solat/embed.html"
     width="100%" 
     height="800" 
     frameborder="0"
@@ -50,8 +50,8 @@ Jadual waktu solat terkini untuk seluruh Malaysia berdasarkan data rasmi **JAKIM
     <!-- Tool elements -->
 </div>
 
-<link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/YOUR-USERNAME/waktu-solat-malaysia@main/waktu-solat.css">
-<script src="https://cdn.jsdelivr.net/gh/YOUR-USERNAME/waktu-solat-malaysia@main/waktu-solat.js"></script>
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/ilmualam/waktu-solat@main/waktu-solat.css">
+<script src="https://cdn.jsdelivr.net/gh/ilmualam/waktu-solat@main/waktu-solat.js"></script>
 ```
 
 ---
@@ -182,8 +182,8 @@ Contributions welcome! Here's how:
 
 ### Development Setup
 ```bash
-git clone https://github.com/YOUR-USERNAME/waktu-solat-malaysia.git
-cd waktu-solat-malaysia
+git clone https://github.com/ilmualam/waktu-solat.git
+cd waktu-solat
 
 # Test locally
 python -m http.server 8000
@@ -252,7 +252,7 @@ See [LICENSE](LICENSE) file for details.
 - **Data Source**: JAKIM e-Solat API
 - **Fallback API**: Aladhan.com
 - **Maintained by**: [IlmuAlam.com](https://ilmualam.com)
-- **Contributors**: [List of contributors](https://github.com/YOUR-USERNAME/waktu-solat-malaysia/graphs/contributors)
+- **Contributors**: [List of contributors](https://github.com/ilmualam/waktu-solat/graphs/contributors)
 
 ---
 
@@ -260,7 +260,7 @@ See [LICENSE](LICENSE) file for details.
 
 - 🌐 **Website**: [https://ilmualam.com](https://ilmualam.com)
 - 📧 **Email**: support@ilmualam.com
-- 💬 **Issues**: [GitHub Issues](https://github.com/YOUR-USERNAME/waktu-solat-malaysia/issues)
+- 💬 **Issues**: [GitHub Issues](https://github.com/ilmualam/waktu-solat/issues)
 - 📱 **WhatsApp**: +60-YOUR-NUMBER
 
 ---
@@ -277,10 +277,10 @@ If this tool helps you, please consider:
 
 ## 📈 Project Stats
 
-![GitHub stars](https://img.shields.io/github/stars/YOUR-USERNAME/waktu-solat-malaysia)
-![GitHub forks](https://img.shields.io/github/forks/YOUR-USERNAME/waktu-solat-malaysia)
-![GitHub issues](https://img.shields.io/github/issues/YOUR-USERNAME/waktu-solat-malaysia)
-![GitHub last commit](https://img.shields.io/github/last-commit/YOUR-USERNAME/waktu-solat-malaysia)
+![GitHub stars](https://img.shields.io/github/stars/ilmualam/waktu-solat)
+![GitHub forks](https://img.shields.io/github/forks/ilmualam/waktu-solat)
+![GitHub issues](https://img.shields.io/github/issues/ilmualam/waktu-solat)
+![GitHub last commit](https://img.shields.io/github/last-commit/ilmualam/waktu-solat)
 
 ---
 
@@ -290,6 +290,6 @@ If this tool helps you, please consider:
 
 *Semoga bermanfaat untuk ummah*
 
-[⬆ Back to top](#-waktu-solat-malaysia)
+[⬆ Back to top](#-waktu-solat)
 
 </div>
