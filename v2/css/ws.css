@@ -1,0 +1,440 @@
+        .ws-tool * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+        }
+
+        .ws-tool {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 20px;
+            background: linear-gradient(135deg, #065c21 0%, #249749 100%);
+            border-radius: 20px;
+            box-shadow: 0 20px 60px rgba(0,0,0,0.3);
+        }
+
+        .ws-tool__header {
+            text-align: center;
+            color: white;
+            margin-bottom: 30px;
+        }
+
+        .ws-tool__title {
+            font-size: 2.5em;
+            margin-bottom: 10px;
+            text-shadow: 2px 2px 4px rgba(0,0,0,0.3);
+        }
+
+        .ws-tool__subtitle {
+            font-size: 1.1em;
+            opacity: 0.9;
+        }
+
+        .ws-tool__controls {
+            display: flex;
+            gap: 10px;
+            margin-bottom: 20px;
+            flex-wrap: wrap;
+        }
+
+        .ws-tool__select {
+            flex: 1;
+            min-width: 200px;
+            padding: 12px 15px;
+            border: none;
+            border-radius: 10px;
+            font-size: 16px;
+            background: white;
+            cursor: pointer;
+            box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+            transition: all 0.3s ease;
+        }
+
+        .ws-tool__select:focus {
+            outline: none;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.2);
+        }
+
+        .ws-tool__btn {
+            padding: 12px 24px;
+            border: none;
+            border-radius: 10px;
+            font-size: 16px;
+            font-weight: bold;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+        }
+
+        .ws-tool__btn:disabled {
+            opacity: 0.6;
+            cursor: not-allowed;
+        }
+
+        .ws-tool__btn--primary {
+            background: #4CAF50;
+            color: white;
+        }
+
+        .ws-tool__btn--primary:hover:not(:disabled) {
+            background: #45a049;
+            transform: translateY(-2px);
+            box-shadow: 0 6px 8px rgba(0,0,0,0.15);
+        }
+
+        .ws-tool__btn--secondary {
+            background: white;
+            color: #065c21;
+        }
+
+        .ws-tool__btn--secondary:hover {
+            background: #f0f0f0;
+        }
+
+        .ws-tool__tabs {
+            display: flex;
+            gap: 10px;
+            margin-bottom: 20px;
+            border-bottom: 2px solid rgba(255,255,255,0.3);
+        }
+
+        .ws-tool__tab {
+            padding: 12px 24px;
+            background: rgba(255,255,255,0.2);
+            color: white;
+            border: none;
+            border-radius: 10px 10px 0 0;
+            cursor: pointer;
+            font-size: 16px;
+            font-weight: bold;
+            transition: all 0.3s ease;
+        }
+
+        .ws-tool__tab:hover {
+            background: rgba(255,255,255,0.3);
+        }
+
+        .ws-tool__tab--active {
+            background: white;
+            color: #065c21;
+        }
+
+        .ws-tool__tab-content {
+            display: none;
+        }
+
+        .ws-tool__tab-content--active {
+            display: block;
+            animation: fadeIn 0.3s ease;
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; }
+            to { opacity: 1; }
+        }
+
+        .ws-tool__main {
+            background: white;
+            border-radius: 15px;
+            padding: 30px;
+            margin-bottom: 20px;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.2);
+        }
+
+        .ws-tool__date {
+            text-align: center;
+            margin-bottom: 20px;
+            color: #333;
+        }
+
+        .ws-tool__date-hijri {
+            font-size: 1.3em;
+            font-weight: bold;
+            color: #065c21;
+            margin-bottom: 5px;
+        }
+
+        .ws-tool__date-gregorian {
+            font-size: 1.1em;
+            color: #666;
+        }
+
+        .ws-tool__location {
+            text-align: center;
+            font-size: 1.2em;
+            color: #249749;
+            margin-bottom: 20px;
+            font-weight: bold;
+        }
+
+        .ws-tool__times {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+            gap: 15px;
+            margin-bottom: 30px;
+        }
+
+        .ws-tool__time-card {
+            background: linear-gradient(135deg, #065c21 0%, #249749 100%);
+            padding: 20px;
+            border-radius: 12px;
+            text-align: center;
+            color: white;
+            transition: transform 0.3s ease;
+        }
+
+        .ws-tool__time-card:hover {
+            transform: translateY(-5px);
+        }
+
+        .ws-tool__time-card--next {
+            background: linear-gradient(135deg, #40c2b5 0%, #00756a 100%);
+            box-shadow: 0 8px 16px rgba(88, 245, 198, 0.3);
+        }
+
+        .ws-tool__time-label {
+            font-size: 0.9em;
+            opacity: 0.9;
+            margin-bottom: 8px;
+        }
+
+        .ws-tool__time-value {
+            font-size: 1.8em;
+            font-weight: bold;
+        }
+
+        .ws-tool__countdown {
+            text-align: center;
+            background: linear-gradient(135deg, #b8e0c4 0%, #398450 100%);
+            padding: 25px;
+            border-radius: 12px;
+            margin-bottom: 20px;
+        }
+
+        .ws-tool__countdown-label {
+            font-size: 1.1em;
+            color: #333;
+            margin-bottom: 10px;
+        }
+
+        .ws-tool__countdown-time {
+            font-size: 2.5em;
+            font-weight: bold;
+            color: #065c21;
+        }
+
+        .ws-tool__actions {
+            display: flex;
+            gap: 10px;
+            flex-wrap: wrap;
+            justify-content: center;
+        }
+
+        .ws-tool__table-container {
+            overflow-x: auto;
+            margin-top: 20px;
+        }
+
+        .ws-tool__table {
+            width: 100%;
+            border-collapse: collapse;
+            min-width: 600px;
+        }
+
+        .ws-tool__table th,
+        .ws-tool__table td {
+            padding: 12px;
+            text-align: center;
+            border-bottom: 1px solid #e0e0e0;
+        }
+
+        .ws-tool__table th {
+            background: linear-gradient(135deg, #065c21 0%, #249749 100%);
+            color: white;
+            font-weight: bold;
+            position: sticky;
+            top: 0;
+            z-index: 10;
+        }
+
+        .ws-tool__table tr:nth-child(even) {
+            background-color: #f8f9fa;
+        }
+
+        .ws-tool__table tr:hover {
+            background-color: #e8eaf6;
+        }
+
+        .ws-tool__mosque-list {
+            margin-top: 20px;
+        }
+
+        .ws-tool__mosque-item {
+            background: #f8f9fa;
+            padding: 15px;
+            margin-bottom: 10px;
+            border-radius: 10px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            transition: all 0.3s ease;
+        }
+
+        .ws-tool__mosque-item:hover {
+            background: #e8eaf6;
+            transform: translateX(5px);
+        }
+
+        .ws-tool__mosque-info {
+            flex: 1;
+        }
+
+        .ws-tool__mosque-name {
+            font-weight: bold;
+            color: #333;
+            margin-bottom: 5px;
+        }
+
+        .ws-tool__mosque-distance {
+            color: #666;
+            font-size: 0.9em;
+        }
+
+        .ws-tool__mosque-address {
+            color: #888;
+            font-size: 0.85em;
+            margin-top: 3px;
+        }
+
+        .ws-tool__mosque-btn {
+            padding: 10px 20px;
+            background: #4CAF50;
+            color: white;
+            border: none;
+            border-radius: 8px;
+            cursor: pointer;
+            font-weight: bold;
+            transition: all 0.3s ease;
+            text-decoration: none;
+            display: inline-block;
+        }
+
+        .ws-tool__mosque-btn:hover {
+            background: #45a049;
+            transform: scale(1.05);
+        }
+
+        .ws-tool__loading {
+            text-align: center;
+            padding: 40px;
+            font-size: 1.2em;
+            color: #065c21;
+        }
+
+        .ws-tool__error {
+            background: #ffebee;
+            color: #c62828;
+            padding: 20px;
+            border-radius: 10px;
+            text-align: center;
+            margin: 20px 0;
+        }
+
+        .ws-tool__success {
+            background: #e8f5e9;
+            color: #2e7d32;
+            padding: 15px;
+            border-radius: 8px;
+            text-align: center;
+            margin: 15px 0;
+        }
+
+        .ws-tool__spinner {
+            border: 4px solid #f3f3f3;
+            border-top: 4px solid #065c21;
+            border-radius: 50%;
+            width: 40px;
+            height: 40px;
+            animation: ws-spin 1s linear infinite;
+            margin: 20px auto;
+        }
+
+        @keyframes ws-spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+
+        .ws-tool__footer {
+            text-align: center;
+            color: white;
+            font-size: 0.9em;
+            margin-top: 20px;
+            padding-top: 20px;
+            border-top: 1px solid rgba(255,255,255,0.3);
+        }
+
+        /* Responsive Design */
+        @media (max-width: 768px) {
+            .ws-tool__title {
+                font-size: 1.8em;
+            }
+
+            .ws-tool__times {
+                grid-template-columns: repeat(2, 1fr);
+            }
+
+            .ws-tool__countdown-time {
+                font-size: 2em;
+            }
+
+            .ws-tool__controls {
+                flex-direction: column;
+            }
+
+            .ws-tool__select,
+            .ws-tool__btn {
+                width: 100%;
+            }
+
+            .ws-tool__table {
+                font-size: 0.9em;
+            }
+
+            .ws-tool__table th,
+            .ws-tool__table td {
+                padding: 8px 4px;
+            }
+
+            .ws-tool__tabs {
+                flex-direction: column;
+            }
+
+            .ws-tool__tab {
+                border-radius: 10px;
+            }
+
+            .ws-tool__mosque-item {
+                flex-direction: column;
+                align-items: flex-start;
+                gap: 10px;
+            }
+
+            .ws-tool__mosque-btn {
+                width: 100%;
+            }
+        }
+
+        @media (max-width: 480px) {
+            .ws-tool {
+                padding: 10px;
+            }
+
+            .ws-tool__main {
+                padding: 15px;
+            }
+
+            .ws-tool__times {
+                grid-template-columns: 1fr;
+            }
+        }
