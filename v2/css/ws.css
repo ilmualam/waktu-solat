@@ -365,7 +365,7 @@
             100% { transform: rotate(360deg); }
         }
 
-        .ws-tool__footer {
+        .ws-tool__footer li{
             text-align: center;
             color: white;
             font-size: 0.9em;
