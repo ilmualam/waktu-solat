@@ -359,13 +359,17 @@
             animation: ws-spin 1s linear infinite;
             margin: 20px auto;
         }
+.ws-tool__footer a{
+            text-align: center;
+            color: white;
+}
 
         @keyframes ws-spin {
             0% { transform: rotate(0deg); }
             100% { transform: rotate(360deg); }
         }
 
-        .ws-tool__footer a{
+        .ws-tool__footer {
             text-align: center;
             color: white;
             font-size: 0.9em;
