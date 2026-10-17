@@ -28,31 +28,33 @@
         ],
         'kelantan': [
             {code: 'KTN01', name: 'Kota Bharu, Bachok, Pasir Puteh, Tumpat, Pasir Mas, Tanah Merah, Machang, Kuala Krai', coords: {lat: 6.1256, lng: 102.2381}},
-            {code: 'KTN03', name: 'Jeli, Gua Musang', coords: {lat: 5.6833, lng: 102.2417}}
+            {code: 'KTN02', name: 'Jeli, Gua Musang', coords: {lat: 5.6833, lng: 102.2417}}
         ],
         'melaka': [
             {code: 'MLK01', name: 'Seluruh Negeri Melaka', coords: {lat: 2.1896, lng: 102.2501}}
         ],
         'negerisembilan': [
             {code: 'NGS01', name: 'Tampin, Jempol', coords: {lat: 2.4667, lng: 102.2333}},
-            {code: 'NGS02', name: 'Jelebu, Kuala Pilah, Port Dickson, Rembau, Seremban', coords: {lat: 2.7258, lng: 101.9424}}
+            {code: 'NGS02', name: 'Jelebu, Kuala Pilah, Rembau', coords: {lat: 2.7390, lng: 102.2487}},
+            {code: 'NGS03', name: 'Port Dickson, Seremban', coords: {lat: 2.7258, lng: 101.9424}}
         ],
         'pahang': [
             {code: 'PHG01', name: 'Pulau Tioman', coords: {lat: 2.8128, lng: 104.1603}},
-            {code: 'PHG02', name: 'Kuantan, Pekan, Rompin, Muadzam Shah', coords: {lat: 3.8077, lng: 103.3260}},
+            {code: 'PHG02', name: 'Kuantan, Pekan, Muadzam Shah', coords: {lat: 3.8077, lng: 103.3260}},
             {code: 'PHG03', name: 'Jerantut, Temerloh, Maran, Bera, Chenor, Jengka', coords: {lat: 3.4540, lng: 102.3699}},
             {code: 'PHG04', name: 'Bentong, Lipis, Raub', coords: {lat: 3.5222, lng: 101.9063}},
             {code: 'PHG05', name: 'Genting Sempah, Janda Baik, Bukit Tinggi', coords: {lat: 3.4211, lng: 101.7936}},
-            {code: 'PHG06', name: 'Cameron Highlands, Genting Highlands, Bukit Fraser', coords: {lat: 4.4704, lng: 101.3779}}
+            {code: 'PHG06', name: 'Cameron Highlands, Genting Highlands, Bukit Fraser', coords: {lat: 4.4704, lng: 101.3779}},
+            {code: 'PHG07', name: 'Rompin', coords: {lat: 2.8000, lng: 103.4800}}
         ],
         'perak': [
             {code: 'PRK01', name: 'Tapah, Slim River, Tanjung Malim', coords: {lat: 4.1967, lng: 101.2576}},
             {code: 'PRK02', name: 'Kuala Kangsar, Sg. Siput, Ipoh, Batu Gajah, Kampar', coords: {lat: 4.5975, lng: 101.0901}},
             {code: 'PRK03', name: 'Lenggong, Pengkalan Hulu, Grik', coords: {lat: 5.0833, lng: 100.9833}},
             {code: 'PRK04', name: 'Temengor, Belum', coords: {lat: 5.5500, lng: 101.3500}},
-            {code: 'PRK05', name: 'Kg Gajah, Teluk Intan, Bagan Datuk, Seri Iskandar', coords: {lat: 4.0225, lng: 101.0211}},
-            {code: 'PRK06', name: 'Beruas, Parit, Lumut, Sitiawan, Pulau Pangkor', coords: {lat: 4.2125, lng: 100.6167}},
-            {code: 'PRK07', name: 'Selama, Taiping, Bagan Serai, Parit Buntar', coords: {lat: 5.0092, lng: 100.7375}}
+            {code: 'PRK05', name: 'Kg Gajah, Teluk Intan, Bagan Datuk, Seri Iskandar, Beruas, Parit, Lumut, Sitiawan, Pulau Pangkor', coords: {lat: 4.0225, lng: 101.0211}},
+            {code: 'PRK06', name: 'Selama, Taiping, Bagan Serai, Parit Buntar', coords: {lat: 4.8500, lng: 100.7410}},
+            {code: 'PRK07', name: 'Bukit Larut', coords: {lat: 4.8620, lng: 100.7950}}
         ],
         'perlis': [
             {code: 'PLS01', name: 'Seluruh Negeri Perlis', coords: {lat: 6.4449, lng: 100.2048}}
@@ -94,11 +96,10 @@
             {code: 'TRG04', name: 'Dungun, Kemaman', coords: {lat: 4.7564, lng: 103.4167}}
         ],
         'wlp': [
-            {code: 'WLY01', name: 'Kuala Lumpur', coords: {lat: 3.1390, lng: 101.6869}},
-            {code: 'WLY02', name: 'Putrajaya', coords: {lat: 2.9264, lng: 101.6964}}
+            {code: 'WLY01', name: 'Kuala Lumpur, Putrajaya', coords: {lat: 3.1390, lng: 101.6869}}
         ],
         'labuan': [
-            {code: 'LBN01', name: 'Labuan', coords: {lat: 5.2831, lng: 115.2308}}
+            {code: 'WLY02', name: 'Labuan', coords: {lat: 5.2831, lng: 115.2308}}
         ]
     };
 
@@ -153,6 +154,15 @@
                 currentZoneCode = data.code;
                 currentZoneName = data.name;
                 currentState = data.state;
+                // codes that e-solat does not recognise, saved by older versions of this widget
+                const moved = {KTN03: 'KTN02', LBN01: 'WLY02'}[data.code] ||
+                    (data.code === 'WLY02' && data.state === 'wlp' ? 'WLY01' : null);
+                if (moved) {
+                    currentZoneCode = moved;
+                    currentZoneName = findZoneByCode(moved).name;
+                    if (moved === 'WLY02') currentState = 'labuan';
+                    saveZone();
+                }
             }
         } catch (e) {
             console.error('LocalStorage error:', e);
