@@ -28,14 +28,15 @@
         ],
         'kelantan': [
             {code: 'KTN01', name: 'Kota Bharu, Bachok, Pasir Puteh, Tumpat, Pasir Mas, Tanah Merah, Machang, Kuala Krai', coords: {lat: 6.1256, lng: 102.2381}},
-            {code: 'KTN03', name: 'Jeli, Gua Musang', coords: {lat: 5.6833, lng: 102.2417}}
+            {code: 'KTN02', name: 'Jeli, Gua Musang', coords: {lat: 5.6833, lng: 102.2417}}
         ],
         'melaka': [
             {code: 'MLK01', name: 'Seluruh Negeri Melaka', coords: {lat: 2.1896, lng: 102.2501}}
         ],
         'negerisembilan': [
             {code: 'NGS01', name: 'Tampin, Jempol', coords: {lat: 2.4667, lng: 102.2333}},
-            {code: 'NGS02', name: 'Jelebu, Kuala Pilah, Port Dickson, Rembau, Seremban', coords: {lat: 2.7258, lng: 101.9424}}
+            {code: 'NGS02', name: 'Jelebu, Kuala Pilah, Rembau', coords: {lat: 2.7390, lng: 102.2487}},
+            {code: 'NGS03', name: 'Port Dickson, Seremban', coords: {lat: 2.7258, lng: 101.9424}}
         ],
         'pahang': [
             {code: 'PHG01', name: 'Pulau Tioman', coords: {lat: 2.8128, lng: 104.1603}},
@@ -94,11 +95,10 @@
             {code: 'TRG04', name: 'Dungun, Kemaman', coords: {lat: 4.7564, lng: 103.4167}}
         ],
         'wlp': [
-            {code: 'WLY01', name: 'Kuala Lumpur', coords: {lat: 3.1390, lng: 101.6869}},
-            {code: 'WLY02', name: 'Putrajaya', coords: {lat: 2.9264, lng: 101.6964}}
+            {code: 'WLY01', name: 'Kuala Lumpur, Putrajaya', coords: {lat: 3.1390, lng: 101.6869}}
         ],
         'labuan': [
-            {code: 'LBN01', name: 'Labuan', coords: {lat: 5.2831, lng: 115.2308}}
+            {code: 'WLY02', name: 'Labuan', coords: {lat: 5.2831, lng: 115.2308}}
         ]
     };
 
@@ -153,6 +153,15 @@
                 currentZoneCode = data.code;
                 currentZoneName = data.name;
                 currentState = data.state;
+                // codes that e-solat does not recognise, saved by older versions of this widget
+                const moved = {KTN03: 'KTN02', LBN01: 'WLY02'}[data.code] ||
+                    (data.code === 'WLY02' && data.state === 'wlp' ? 'WLY01' : null);
+                if (moved) {
+                    currentZoneCode = moved;
+                    currentZoneName = findZoneByCode(moved).name;
+                    if (moved === 'WLY02') currentState = 'labuan';
+                    saveZone();
+                }
             }
         } catch (e) {
             console.error('LocalStorage error:', e);
